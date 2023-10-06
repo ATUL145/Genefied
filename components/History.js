@@ -17,22 +17,25 @@ function History(props) {
 
   const [imageData, setImageData] = React.useState([]);
 
-  const addNewImage = React.useCallback(
-    (imageUri, caption = "") => {
-      const newImageData = {
-        id: new Date().getTime().toString(),
-        imageUri,
-        caption,
-        liked: false,
-      };
-      setImageData((prevData) => [newImageData, ...prevData]);
-      AsyncStorage.setItem(
-        "imageData",
-        JSON.stringify([newImageData, ...prevData])
-      );
-    },
-    [imageData]
-  );
+  const addNewImage = React.useCallback(async (imageUri, caption = "") => {
+    const newImageData = {
+      id: new Date().getTime().toString(),
+      imageUri,
+      caption,
+      liked: false,
+    };
+
+    const prevData = await AsyncStorage.getItem("imageData");
+
+    const prevImageData = prevData ? JSON.parse(prevData) : [];
+
+    setImageData((prevData) => [newImageData, ...prevData]);
+
+    AsyncStorage.setItem(
+      "imageData",
+      JSON.stringify([newImageData, ...prevImageData])
+    );
+  }, []);
 
   React.useEffect(() => {
     // Function to retrieve stored image data
